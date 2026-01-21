@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const AdminSettingsPage = () => {
+  const { t } = useLanguage();
   const { token } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ const AdminSettingsPage = () => {
       setWhatsappNumber(response.data.whatsapp_number);
     } catch (error) {
       console.error('Failed to fetch settings:', error);
-      toast.error('Failed to load settings');
+      toast.error(t('admin.failedToLoadSettings'));
     } finally {
       setLoading(false);
     }
@@ -38,14 +40,14 @@ const AdminSettingsPage = () => {
 
   const handleSave = async () => {
     if (!whatsappNumber) {
-      toast.error('WhatsApp number is required');
+      toast.error(t('admin.whatsappRequired'));
       return;
     }
 
     // Validate format (numbers only)
     const cleanNumber = whatsappNumber.replace(/\D/g, '');
     if (cleanNumber.length < 10) {
-      toast.error('Please enter a valid WhatsApp number');
+      toast.error(t('admin.invalidWhatsappNumber'));
       return;
     }
 
@@ -56,11 +58,11 @@ const AdminSettingsPage = () => {
         { whatsapp_number: cleanNumber },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success('Settings saved successfully');
+      toast.success(t('admin.settingsSaved'));
       setWhatsappNumber(cleanNumber);
     } catch (error) {
       console.error('Failed to save settings:', error);
-      toast.error('Failed to save settings');
+      toast.error(t('admin.failedToSaveSettings'));
     } finally {
       setSaving(false);
     }
@@ -69,7 +71,7 @@ const AdminSettingsPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">Loading settings...</div>
+        <div className="text-center">{t('admin.loadingSettings')}</div>
       </div>
     );
   }
@@ -87,7 +89,7 @@ const AdminSettingsPage = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-nunito font-bold">Settings</h1>
+          <h1 className="text-2xl font-nunito font-bold">{t('admin.settings')}</h1>
         </div>
       </div>
 
@@ -102,9 +104,9 @@ const AdminSettingsPage = () => {
               <MessageCircle className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h2 className="text-xl font-nunito font-bold">WhatsApp Integration</h2>
+              <h2 className="text-xl font-nunito font-bold">{t('admin.whatsappIntegration')}</h2>
               <p className="text-sm text-muted-foreground">
-                Configure the WhatsApp number for receiving orders
+                {t('admin.configureWhatsapp')}
               </p>
             </div>
           </div>
@@ -112,10 +114,10 @@ const AdminSettingsPage = () => {
           <div className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="whatsapp" className="text-sm font-semibold">
-                WhatsApp Number
+                {t('admin.whatsappNumber')}
               </Label>
               <p className="text-xs text-muted-foreground mb-2">
-                Enter the number with country code (e.g., 5521988760870 for Brazil)
+                {t('admin.enterNumberWithCode')}
               </p>
               <Input
                 id="whatsapp"
@@ -127,17 +129,17 @@ const AdminSettingsPage = () => {
                 className="h-12 rounded-lg font-mono"
               />
               <p className="text-xs text-muted-foreground mt-2">
-                Current: +{whatsappNumber}
+                {t('admin.current')} +{whatsappNumber}
               </p>
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="text-sm font-semibold text-blue-900 mb-2">How it works</h3>
+              <h3 className="text-sm font-semibold text-blue-900 mb-2">{t('admin.howItWorks')}</h3>
               <ul className="text-xs text-blue-800 space-y-1">
-                <li>• Guests will send their orders to this WhatsApp number</li>
-                <li>• Make sure the number can receive messages from unknown contacts</li>
-                <li>• Format: Country code + number (no spaces, dashes, or special characters)</li>
-                <li>• Example: 5521988760870 (Brazil), 14155552671 (USA)</li>
+                <li>• {t('admin.whatsappTip1')}</li>
+                <li>• {t('admin.whatsappTip2')}</li>
+                <li>• {t('admin.whatsappTip3')}</li>
+                <li>• {t('admin.whatsappTip4')}</li>
               </ul>
             </div>
 
@@ -148,7 +150,7 @@ const AdminSettingsPage = () => {
                 variant="outline"
                 className="flex-1 h-12 rounded-lg"
               >
-                Cancel
+                {t('admin.cancel')}
               </Button>
               <Button
                 data-testid="save-settings-button"
@@ -157,7 +159,7 @@ const AdminSettingsPage = () => {
                 className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground h-12 rounded-lg font-semibold"
               >
                 <Save className="h-4 w-4 mr-2" />
-                {saving ? 'Saving...' : 'Save Settings'}
+                {saving ? t('admin.saving') : t('admin.saveSettings')}
               </Button>
             </div>
           </div>

@@ -33,7 +33,7 @@ const DDI_OPTIONS = [
 const CheckoutPage = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
-  const { cart, getTotal } = useCart();
+  const { cart, getTotal, clearCart } = useCart();
   const [whatsappNumber, setWhatsappNumber] = useState('5521988760870');
   const [formData, setFormData] = useState({
     name: '',

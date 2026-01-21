@@ -84,6 +84,12 @@ const CatalogPage = () => {
     };
     addToCart(productWithName);
     toast.success(`${getProductName(product)} ${t('addToCart').toLowerCase()}`);
+    
+    // Track analytics
+    axios.post(`${API}/analytics/track`, {
+      product_id: product.id,
+      event_type: 'add_to_cart'
+    }).catch(err => console.error('Analytics tracking failed:', err));
   };
 
   const handleCategoryChange = (category) => {

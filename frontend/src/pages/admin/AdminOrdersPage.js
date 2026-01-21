@@ -14,7 +14,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const AdminOrdersPage = () => {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const { token } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -49,15 +49,15 @@ const AdminOrdersPage = () => {
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success('Order status updated');
+      toast.success(t('admin.orderStatusUpdated'));
       fetchOrders();
     } catch (error) {
-      toast.error('Failed to update order status');
+      toast.error(t('admin.failedToUpdateStatus'));
     }
   };
 
   const deleteOrder = async (orderId) => {
-    if (!window.confirm('Are you sure you want to delete this order? This will also remove associated analytics data.')) {
+    if (!window.confirm(t('admin.confirmDeleteOrder'))) {
       return;
     }
 
@@ -67,10 +67,10 @@ const AdminOrdersPage = () => {
       });
       
       const analyticsDeleted = response.data.analytics_deleted || 0;
-      toast.success(`Order deleted successfully. ${analyticsDeleted} analytics entries removed.`);
+      toast.success(`${t('admin.orderDeleted')} ${analyticsDeleted} ${t('admin.analyticsEntriesRemoved')}.`);
       fetchOrders();
     } catch (error) {
-      toast.error('Failed to delete order');
+      toast.error(t('admin.failedToDeleteOrder'));
     }
   };
 
@@ -104,6 +104,21 @@ const AdminOrdersPage = () => {
     }
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'pending':
+        return t('admin.pending');
+      case 'confirmed':
+        return t('admin.confirmed');
+      case 'completed':
+        return t('admin.completed');
+      case 'cancelled':
+        return t('admin.cancelled');
+      default:
+        return status;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -117,39 +132,39 @@ const AdminOrdersPage = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-nunito font-bold">Order Management</h1>
+          <h1 className="text-2xl font-nunito font-bold">{t('admin.orderManagement')}</h1>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto p-4">
         {/* Filter */}
         <div className="mb-6 flex items-center gap-4">
-          <span className="text-sm font-semibold">Filter by status:</span>
+          <span className="text-sm font-semibold">{t('admin.filterByStatus')}</span>
           <Select value={filterStatus || "all"} onValueChange={(val) => setFilterStatus(val === "all" ? "" : val)}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Orders" />
+              <SelectValue placeholder={t('admin.allOrders')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Orders</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="confirmed">Confirmed</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
+              <SelectItem value="all">{t('admin.allOrders')}</SelectItem>
+              <SelectItem value="pending">{t('admin.pending')}</SelectItem>
+              <SelectItem value="confirmed">{t('admin.confirmed')}</SelectItem>
+              <SelectItem value="completed">{t('admin.completed')}</SelectItem>
+              <SelectItem value="cancelled">{t('admin.cancelled')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Orders List */}
         {loading ? (
-          <div className="text-center py-12">Loading orders...</div>
+          <div className="text-center py-12">{t('admin.loadingOrders')}</div>
         ) : orders.length === 0 ? (
           <div className="text-center py-12 bg-card rounded-xl">
             <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <p className="text-lg font-semibold text-muted-foreground">
-              No orders found
+              {t('admin.noOrdersFound')}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Orders will appear here once guests place them
+              {t('admin.ordersAppearHere')}
             </p>
           </div>
         ) : (
@@ -168,7 +183,7 @@ const AdminOrdersPage = () => {
                     {getStatusIcon(order.status)}
                     <div>
                       <h3 className="font-nunito font-bold text-lg">
-                        Order #{order.id.slice(0, 8)}
+                        {t('admin.order')} #{order.id.slice(0, 8)}
                       </h3>
                       <p className="text-sm text-muted-foreground">
                         {new Date(order.created_at).toLocaleString(language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US')}
@@ -180,38 +195,38 @@ const AdminOrdersPage = () => {
                       order.status
                     )}`}
                   >
-                    {order.status.toUpperCase()}
+                    {getStatusLabel(order.status).toUpperCase()}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">Guest Name</p>
+                    <p className="text-sm text-muted-foreground">{t('admin.guestName')}</p>
                     <p className="font-semibold">{order.guest_name}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Room Number</p>
+                    <p className="text-sm text-muted-foreground">{t('admin.roomNumber')}</p>
                     <p className="font-semibold">{order.room_number}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Phone</p>
+                    <p className="text-sm text-muted-foreground">{t('admin.phone')}</p>
                     <p className="font-semibold">{order.phone}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Delivery Preference</p>
+                    <p className="text-sm text-muted-foreground">{t('admin.deliveryPreference')}</p>
                     <p className="font-semibold">{order.delivery_preference}</p>
                   </div>
                 </div>
 
                 {order.notes && (
                   <div className="mb-4 p-3 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">Notes:</p>
+                    <p className="text-sm text-muted-foreground">{t('admin.notes')}</p>
                     <p className="text-sm">{order.notes}</p>
                   </div>
                 )}
 
                 <div className="border-t border-muted pt-4 mb-4">
-                  <p className="text-sm font-semibold mb-2">Items:</p>
+                  <p className="text-sm font-semibold mb-2">{t('admin.items')}</p>
                   <div className="space-y-2">
                     {order.items.map((item, idx) => (
                       <div key={idx} className="flex justify-between text-sm">
@@ -228,7 +243,7 @@ const AdminOrdersPage = () => {
 
                 <div className="flex items-center justify-between border-t border-muted pt-4">
                   <div className="text-lg font-bold">
-                    Total: <span className="text-primary">{formatCurrency(order.total)}</span>
+                    {t('admin.total')} <span className="text-primary">{formatCurrency(order.total)}</span>
                   </div>
                   <div className="flex gap-2 flex-wrap">
                     {order.status === 'pending' && (
@@ -238,7 +253,7 @@ const AdminOrdersPage = () => {
                         size="sm"
                         className="bg-blue-500 hover:bg-blue-600 text-white"
                       >
-                        Confirm
+                        {t('admin.confirm')}
                       </Button>
                     )}
                     {order.status === 'confirmed' && (
@@ -248,7 +263,7 @@ const AdminOrdersPage = () => {
                         size="sm"
                         className="bg-green-500 hover:bg-green-600 text-white"
                       >
-                        Complete
+                        {t('admin.complete')}
                       </Button>
                     )}
                     {(order.status === 'pending' || order.status === 'confirmed') && (
@@ -258,7 +273,7 @@ const AdminOrdersPage = () => {
                         size="sm"
                         variant="destructive"
                       >
-                        Cancel
+                        {t('admin.cancel')}
                       </Button>
                     )}
                     <Button
@@ -268,7 +283,7 @@ const AdminOrdersPage = () => {
                       variant="outline"
                       className="border-red-500 text-red-500 hover:bg-red-50"
                     >
-                      Delete
+                      {t('admin.delete')}
                     </Button>
                   </div>
                 </div>

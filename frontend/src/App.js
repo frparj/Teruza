@@ -113,6 +113,22 @@ function App() {
                 }
               />
               <Route
+                path="/admin/orders"
+                element={
+                  <ProtectedRoute>
+                    <AdminOrdersPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/analytics"
+                element={
+                  <ProtectedRoute>
+                    <AdminAnalyticsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/admin/categories"
                 element={
                   <ProtectedRoute>

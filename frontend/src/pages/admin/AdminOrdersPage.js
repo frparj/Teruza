@@ -107,12 +107,12 @@ const AdminOrdersPage = () => {
         {/* Filter */}
         <div className="mb-6 flex items-center gap-4">
           <span className="text-sm font-semibold">Filter by status:</span>
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <Select value={filterStatus || "all"} onValueChange={(val) => setFilterStatus(val === "all" ? "" : val)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Orders" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Orders</SelectItem>
+              <SelectItem value="all">All Orders</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="confirmed">Confirmed</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>

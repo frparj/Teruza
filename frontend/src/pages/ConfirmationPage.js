@@ -11,29 +11,28 @@ const ConfirmationPage = () => {
   const navigate = useNavigate();
   const { clearCart } = useCart();
   const [orderData, setOrderData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const lastOrder = localStorage.getItem('teruza-last-order');
-    console.log('Confirmation page - lastOrder from localStorage:', lastOrder);
     
     if (lastOrder) {
       try {
         const parsedOrder = JSON.parse(lastOrder);
-        console.log('Parsed order:', parsedOrder);
         setOrderData(parsedOrder);
         clearCart();
         localStorage.removeItem('teruza-last-order');
+        setIsLoading(false);
       } catch (error) {
         console.error('Failed to parse order data:', error);
         navigate('/');
       }
     } else {
-      console.log('No order data found, redirecting to home');
       navigate('/');
     }
-  }, [navigate, clearCart]);
+  }, []); // Empty dependency array - only run once on mount
 
-  if (!orderData) return null;
+  if (isLoading || !orderData) return null;
 
   const handleOpenWhatsApp = () => {
     window.open(orderData.whatsappUrl, '_blank');

@@ -138,6 +138,14 @@ function App() {
                 }
               />
               <Route
+                path="/admin/settings"
+                element={
+                  <ProtectedRoute>
+                    <AdminSettingsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/admin/products/:id"
                 element={
                   <ProtectedRoute>

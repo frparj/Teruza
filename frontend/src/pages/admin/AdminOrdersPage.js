@@ -56,6 +56,24 @@ const AdminOrdersPage = () => {
     }
   };
 
+  const deleteOrder = async (orderId) => {
+    if (!window.confirm('Are you sure you want to delete this order? This will also remove associated analytics data.')) {
+      return;
+    }
+
+    try {
+      const response = await axios.delete(`${API}/orders/${orderId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      const analyticsDeleted = response.data.analytics_deleted || 0;
+      toast.success(`Order deleted successfully. ${analyticsDeleted} analytics entries removed.`);
+      fetchOrders();
+    } catch (error) {
+      toast.error('Failed to delete order');
+    }
+  };
+
   const getStatusIcon = (status) => {
     switch (status) {
       case 'pending':

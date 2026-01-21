@@ -23,6 +23,7 @@ import AdminProductFormPage from '@/pages/admin/AdminProductFormPage';
 import AdminCategoriesPage from '@/pages/admin/AdminCategoriesPage';
 import AdminAnalyticsPage from '@/pages/admin/AdminAnalyticsPage';
 import AdminOrdersPage from '@/pages/admin/AdminOrdersPage';
+import AdminSettingsPage from '@/pages/admin/AdminSettingsPage';
 
 const GuestLayout = ({ children }) => {
   return (

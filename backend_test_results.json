@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-01-21T02:03:51.665187",
+  "total_tests": 11,
+  "passed_tests": 11,
+  "success_rate": "100.0%",
+  "test_details": [
+    {
+      "test": "Admin Login",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Current User",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get All Products",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Categories",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Products by Category",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Products by Type",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Featured Products",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Create Product",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Single Product",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Update Product",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Delete Product",
+      "success": true,
+      "details": ""
+    }
+  ]
+}

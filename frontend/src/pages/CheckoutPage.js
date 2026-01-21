@@ -105,7 +105,7 @@ const CheckoutPage = () => {
       };
       
       const message = generateWhatsAppMessage(displayOrder, language);
-      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
       
       localStorage.setItem('teruza-last-order', JSON.stringify({ order: displayOrder, whatsappUrl }));
       navigate('/confirmation');

@@ -14,14 +14,24 @@ const ConfirmationPage = () => {
 
   useEffect(() => {
     const lastOrder = localStorage.getItem('teruza-last-order');
+    console.log('Confirmation page - lastOrder from localStorage:', lastOrder);
+    
     if (lastOrder) {
-      setOrderData(JSON.parse(lastOrder));
-      clearCart();
-      localStorage.removeItem('teruza-last-order');
+      try {
+        const parsedOrder = JSON.parse(lastOrder);
+        console.log('Parsed order:', parsedOrder);
+        setOrderData(parsedOrder);
+        clearCart();
+        localStorage.removeItem('teruza-last-order');
+      } catch (error) {
+        console.error('Failed to parse order data:', error);
+        navigate('/');
+      }
     } else {
+      console.log('No order data found, redirecting to home');
       navigate('/');
     }
-  }, []);
+  }, [navigate, clearCart]);
 
   if (!orderData) return null;
 

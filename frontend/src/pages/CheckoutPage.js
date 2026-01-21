@@ -107,14 +107,18 @@ const CheckoutPage = () => {
       const message = generateWhatsAppMessage(displayOrder, language);
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
       
-      // Store order data
-      const orderDataToStore = { order: displayOrder, whatsappUrl };
-      localStorage.setItem('teruza-last-order', JSON.stringify(orderDataToStore));
+      // Open WhatsApp directly
+      window.open(whatsappUrl, '_blank');
       
-      // Small delay to ensure localStorage is written
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Show success message
+      toast.success(t('orderReady'));
       
-      navigate('/confirmation');
+      // Clear cart and navigate to home
+      setTimeout(() => {
+        clearCart();
+        navigate('/');
+      }, 1000);
+      
     } catch (error) {
       console.error('Failed to create order:', error);
       toast.error('Failed to create order. Please try again.');

@@ -110,7 +110,7 @@ const AdminDashboardPage = () => {
               variant="outline"
               className="h-10"
             >
-              Orders
+              {t('admin.orders')}
             </Button>
             <Button
               data-testid="admin-analytics-button"
@@ -118,7 +118,7 @@ const AdminDashboardPage = () => {
               variant="outline"
               className="h-10"
             >
-              Analytics
+              {t('admin.analytics')}
             </Button>
             <Button
               data-testid="admin-categories-button"
@@ -126,7 +126,7 @@ const AdminDashboardPage = () => {
               variant="outline"
               className="h-10"
             >
-              Categories
+              {t('admin.categories')}
             </Button>
             <Button
               data-testid="admin-settings-button"
@@ -134,7 +134,7 @@ const AdminDashboardPage = () => {
               variant="outline"
               className="h-10"
             >
-              Settings
+              {t('admin.settings')}
             </Button>
             <Button
               data-testid="admin-logout-button"

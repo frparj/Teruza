@@ -57,6 +57,12 @@ const translations = {
     orderCopied: 'Pedido copiado para área de transferência',
     required: 'obrigatório',
     fillAllFields: 'Por favor, preencha todos os campos obrigatórios',
+    productDetails: 'Detalhes do Produto',
+    addToCartFull: 'Adicionar ao Carrinho',
+    addedToCart: 'adicionado ao carrinho',
+    itemsAddedToCart: 'itens adicionados ao carrinho',
+    close: 'Fechar',
+    serviceNote: 'Este é um serviço. A quantidade é fixa.',
     ddi: {
       '+55': 'Brasil',
       '+54': 'Argentina',

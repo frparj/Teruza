@@ -41,7 +41,7 @@ const AdminCategoriesPage = () => {
       setCategories(response.data);
     } catch (error) {
       console.error('Failed to fetch categories:', error);
-      toast.error('Failed to load categories');
+      toast.error(t('admin.failedToLoadCategories'));
     } finally {
       setLoading(false);
     }
@@ -64,9 +64,9 @@ const AdminCategoriesPage = () => {
       });
 
       setFormData({ ...formData, image_url: response.data.image_url });
-      toast.success('Image uploaded');
+      toast.success(t('admin.imageUploaded'));
     } catch (error) {
-      toast.error('Failed to upload image');
+      toast.error(t('admin.failedToUploadImage'));
     } finally {
       setUploading(false);
     }
@@ -95,7 +95,7 @@ const AdminCategoriesPage = () => {
 
   const handleSave = async () => {
     if (!formData.name_pt || !formData.name_en || !formData.name_es) {
-      toast.error('Please fill all name fields');
+      toast.error(t('admin.fillAllNameFields'));
       return;
     }
 
@@ -104,31 +104,31 @@ const AdminCategoriesPage = () => {
         await axios.put(`${API}/categories/${editingCategory.id}`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('Category updated successfully');
+        toast.success(t('admin.categoryUpdated'));
       } else {
         await axios.post(`${API}/categories`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('Category created successfully');
+        toast.success(t('admin.categoryCreated'));
       }
       setIsDialogOpen(false);
       fetchCategories();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to save category');
+      toast.error(error.response?.data?.detail || t('admin.failedToSaveCategory'));
     }
   };
 
   const handleDelete = async (categoryId, categoryName) => {
-    if (!window.confirm(`Are you sure you want to delete "${categoryName}"?`)) return;
+    if (!window.confirm(`${t('admin.confirmDeleteCategory')} "${categoryName}"?`)) return;
 
     try {
       await axios.delete(`${API}/categories/${categoryId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success('Category deleted successfully');
+      toast.success(t('admin.categoryDeleted'));
       fetchCategories();
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to delete category');
+      toast.error(error.response?.data?.detail || t('admin.failedToDeleteCategory'));
     }
   };
 
@@ -151,7 +151,7 @@ const AdminCategoriesPage = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-nunito font-bold">Category Management</h1>
+          <h1 className="text-2xl font-nunito font-bold">{t('admin.categoryManagement')}</h1>
         </div>
       </div>
 
@@ -166,19 +166,19 @@ const AdminCategoriesPage = () => {
                 className="bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-6 rounded-lg font-semibold"
               >
                 <Plus className="h-5 w-5 mr-2" />
-                Add Category
+                {t('admin.addCategory')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>
-                  {editingCategory ? 'Edit Category' : 'Add New Category'}
+                  {editingCategory ? t('admin.editCategory') : t('admin.addNewCategory')}
                 </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 {/* Image Upload */}
                 <div className="space-y-2">
-                  <Label>Category Image</Label>
+                  <Label>{t('admin.categoryImage')}</Label>
                   <div className="flex items-center gap-4">
                     {formData.image_url && (
                       <img
@@ -203,7 +203,7 @@ const AdminCategoriesPage = () => {
                         className="h-10"
                       >
                         <Upload className="h-4 w-4 mr-2" />
-                        {uploading ? 'Uploading...' : 'Upload Image'}
+                        {uploading ? t('admin.uploading') : t('admin.uploadImage')}
                       </Button>
                     </div>
                   </div>
@@ -212,7 +212,7 @@ const AdminCategoriesPage = () => {
                 {/* Name Fields */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>Name (Portuguese)</Label>
+                    <Label>{t('admin.namePortuguese')}</Label>
                     <Input
                       data-testid="category-name-pt"
                       value={formData.name_pt}
@@ -222,7 +222,7 @@ const AdminCategoriesPage = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Name (English)</Label>
+                    <Label>{t('admin.nameEnglish')}</Label>
                     <Input
                       data-testid="category-name-en"
                       value={formData.name_en}
@@ -232,7 +232,7 @@ const AdminCategoriesPage = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Name (Spanish)</Label>
+                    <Label>{t('admin.nameSpanish')}</Label>
                     <Input
                       data-testid="category-name-es"
                       value={formData.name_es}
@@ -250,14 +250,14 @@ const AdminCategoriesPage = () => {
                     variant="outline"
                     className="flex-1 h-10"
                   >
-                    Cancel
+                    {t('admin.cancel')}
                   </Button>
                   <Button
                     data-testid="save-category-button"
                     onClick={handleSave}
                     className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground h-10"
                   >
-                    {editingCategory ? 'Update' : 'Create'}
+                    {editingCategory ? t('admin.update') : t('admin.create')}
                   </Button>
                 </div>
               </div>
@@ -267,7 +267,7 @@ const AdminCategoriesPage = () => {
 
         {/* Categories Grid */}
         {loading ? (
-          <div className="text-center py-12">Loading...</div>
+          <div className="text-center py-12">{t('admin.loading')}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((category, index) => (
@@ -308,7 +308,7 @@ const AdminCategoriesPage = () => {
                       className="flex-1"
                     >
                       <Edit className="h-4 w-4 mr-2" />
-                      Edit
+                      {t('admin.edit')}
                     </Button>
                     <Button
                       data-testid={`delete-category-${category.id}`}
@@ -318,7 +318,7 @@ const AdminCategoriesPage = () => {
                       className="flex-1"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
+                      {t('admin.delete')}
                     </Button>
                   </div>
                 </div>

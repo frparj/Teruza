@@ -11,6 +11,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import { formatCurrency, WHATSAPP_NUMBER, generateWhatsAppMessage } from '@/lib/utils';
 import { toast } from 'sonner';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const DDI_OPTIONS = [
   { code: '+55', key: '+55' },

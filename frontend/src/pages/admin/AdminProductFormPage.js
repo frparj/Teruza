@@ -186,7 +186,7 @@ const AdminProductFormPage = () => {
                   className="h-10"
                 >
                   <Upload className="h-4 w-4 mr-2" />
-                  {uploading ? 'Uploading...' : t('admin.uploadImage')}
+                  {uploading ? t('admin.uploading') : t('admin.uploadImage')}
                 </Button>
               </div>
             </div>

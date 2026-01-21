@@ -111,6 +111,14 @@ function App() {
                 }
               />
               <Route
+                path="/admin/categories"
+                element={
+                  <ProtectedRoute>
+                    <AdminCategoriesPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/admin/products/:id"
                 element={
                   <ProtectedRoute>

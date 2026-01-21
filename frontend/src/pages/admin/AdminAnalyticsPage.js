@@ -13,7 +13,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const AdminAnalyticsPage = () => {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   const { token } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -39,14 +39,14 @@ const AdminAnalyticsPage = () => {
       setProductAnalytics(productsRes.data);
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
-      toast.error('Failed to load analytics');
+      toast.error(t('admin.failedToLoadAnalytics'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleResetAnalytics = async () => {
-    if (!window.confirm('Are you sure you want to reset ALL analytics data? This action cannot be undone and will clear all product performance metrics (views, add to cart, orders).')) {
+    if (!window.confirm(t('admin.confirmResetAnalytics'))) {
       return;
     }
 
@@ -54,11 +54,11 @@ const AdminAnalyticsPage = () => {
       const response = await axios.delete(`${API}/analytics/reset`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success(`Analytics reset successfully. ${response.data.deleted_count} entries removed.`);
+      toast.success(`${t('admin.analyticsResetSuccess')} ${response.data.deleted_count} ${t('admin.entriesRemoved')}.`);
       fetchAnalytics();
     } catch (error) {
       console.error('Failed to reset analytics:', error);
-      toast.error('Failed to reset analytics');
+      toast.error(t('admin.failedToResetAnalytics'));
     }
   };
 
@@ -71,7 +71,7 @@ const AdminAnalyticsPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">Loading analytics...</div>
+        <div className="text-center">{t('admin.loadingAnalytics')}</div>
       </div>
     );
   }
@@ -89,7 +89,7 @@ const AdminAnalyticsPage = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-nunito font-bold">Analytics & Insights</h1>
+          <h1 className="text-2xl font-nunito font-bold">{t('admin.analyticsInsights')}</h1>
         </div>
       </div>
 
@@ -102,12 +102,12 @@ const AdminAnalyticsPage = () => {
             className="bg-card rounded-xl shadow-md p-6 border-l-4 border-primary"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-muted-foreground">Total Orders</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground">{t('admin.totalOrders')}</h3>
               <ShoppingCart className="h-5 w-5 text-primary" />
             </div>
             <p className="text-3xl font-bold">{summary?.total_orders || 0}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              {summary?.pending_orders || 0} pending
+              {summary?.pending_orders || 0} {t('admin.pending').toLowerCase()}
             </p>
           </motion.div>
 
@@ -118,12 +118,12 @@ const AdminAnalyticsPage = () => {
             className="bg-card rounded-xl shadow-md p-6 border-l-4 border-secondary"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-muted-foreground">Total Revenue</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground">{t('admin.totalRevenue')}</h3>
               <DollarSign className="h-5 w-5 text-secondary" />
             </div>
             <p className="text-3xl font-bold">{formatCurrency(summary?.total_revenue || 0)}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              From {summary?.completed_orders || 0} completed orders
+              {t('admin.fromCompletedOrders')} ({summary?.completed_orders || 0})
             </p>
           </motion.div>
 
@@ -134,11 +134,11 @@ const AdminAnalyticsPage = () => {
             className="bg-card rounded-xl shadow-md p-6 border-l-4 border-blue-500"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-muted-foreground">Recent Orders</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground">{t('admin.recentOrders')}</h3>
               <TrendingUp className="h-5 w-5 text-blue-500" />
             </div>
             <p className="text-3xl font-bold">{summary?.recent_orders || 0}</p>
-            <p className="text-xs text-muted-foreground mt-1">Last 7 days</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('admin.last7Days')}</p>
           </motion.div>
 
           <motion.div
@@ -148,14 +148,14 @@ const AdminAnalyticsPage = () => {
             className="bg-card rounded-xl shadow-md p-6 border-l-4 border-orange-500"
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-muted-foreground">Top Category</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground">{t('admin.topCategory')}</h3>
               <Package className="h-5 w-5 text-orange-500" />
             </div>
             <p className="text-xl font-bold truncate">
               {summary?.popular_categories?.[0]?.category || 'N/A'}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {summary?.popular_categories?.[0]?.count || 0} orders
+              {summary?.popular_categories?.[0]?.count || 0} {t('admin.ordersCount')}
             </p>
           </motion.div>
         </div>
@@ -164,9 +164,9 @@ const AdminAnalyticsPage = () => {
         <div className="bg-card rounded-xl shadow-md overflow-hidden mb-6">
           <div className="p-6 border-b border-muted flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-nunito font-bold">Product Performance</h2>
+              <h2 className="text-xl font-nunito font-bold">{t('admin.productPerformance')}</h2>
               <p className="text-sm text-muted-foreground mt-1">
-                Track views, cart additions, orders, and revenue for each product
+                {t('admin.trackPerformance')}
               </p>
             </div>
             <Button
@@ -175,28 +175,28 @@ const AdminAnalyticsPage = () => {
               variant="destructive"
               className="h-10"
             >
-              Reset Analytics
+              {t('admin.resetAnalytics')}
             </Button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left p-4 font-semibold text-sm">Product</th>
-                  <th className="text-left p-4 font-semibold text-sm">Category</th>
-                  <th className="text-left p-4 font-semibold text-sm">Price</th>
-                  <th className="text-left p-4 font-semibold text-sm">Views</th>
-                  <th className="text-left p-4 font-semibold text-sm">Add to Cart</th>
-                  <th className="text-left p-4 font-semibold text-sm">Orders</th>
-                  <th className="text-left p-4 font-semibold text-sm">Conversion</th>
-                  <th className="text-left p-4 font-semibold text-sm">Revenue</th>
+                  <th className="text-left p-4 font-semibold text-sm">{t('admin.product')}</th>
+                  <th className="text-left p-4 font-semibold text-sm">{t('admin.category')}</th>
+                  <th className="text-left p-4 font-semibold text-sm">{t('admin.price')}</th>
+                  <th className="text-left p-4 font-semibold text-sm">{t('admin.views')}</th>
+                  <th className="text-left p-4 font-semibold text-sm">{t('admin.addToCartLabel')}</th>
+                  <th className="text-left p-4 font-semibold text-sm">{t('admin.orders')}</th>
+                  <th className="text-left p-4 font-semibold text-sm">{t('admin.conversion')}</th>
+                  <th className="text-left p-4 font-semibold text-sm">{t('admin.revenue')}</th>
                 </tr>
               </thead>
               <tbody>
                 {productAnalytics.length === 0 ? (
                   <tr>
                     <td colSpan="8" className="text-center py-8 text-muted-foreground">
-                      No analytics data yet. Orders will appear here once placed.
+                      {t('admin.noAnalyticsData')}
                     </td>
                   </tr>
                 ) : (

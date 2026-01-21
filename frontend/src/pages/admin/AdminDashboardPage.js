@@ -103,15 +103,25 @@ const AdminDashboardPage = () => {
       <div className="bg-card border-b border-muted sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-nunito font-bold">{t('admin.dashboard')}</h1>
-          <Button
-            data-testid="admin-logout-button"
-            onClick={logout}
-            variant="ghost"
-            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-          >
-            <LogOut className="h-5 w-5 mr-2" />
-            {t('admin.logout')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              data-testid="admin-categories-button"
+              onClick={() => navigate('/admin/categories')}
+              variant="outline"
+              className="h-10"
+            >
+              Manage Categories
+            </Button>
+            <Button
+              data-testid="admin-logout-button"
+              onClick={logout}
+              variant="ghost"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <LogOut className="h-5 w-5 mr-2" />
+              {t('admin.logout')}
+            </Button>
+          </div>
         </div>
       </div>
 

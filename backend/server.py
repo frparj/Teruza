@@ -735,6 +735,15 @@ async def get_analytics_summary(current_user: dict = Depends(get_current_user)):
         'popular_categories': [{'category': cat, 'count': count} for cat, count in popular_categories]
     }
 
+@api_router.delete("/analytics/reset")
+async def reset_analytics(current_user: dict = Depends(get_current_user)):
+    """Delete all analytics data"""
+    result = await db.analytics.delete_many({})
+    return {
+        "message": "Analytics data reset successfully",
+        "deleted_count": result.deleted_count
+    }
+
 # Settings Routes
 @api_router.get("/settings")
 async def get_settings():

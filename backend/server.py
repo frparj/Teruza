@@ -588,6 +588,47 @@ async def update_order_status(
     
     return updated_order
 
+@api_router.delete("/orders/{order_id}")
+async def delete_order(
+    order_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    # Get the order first to get product IDs
+    order = await db.orders.find_one({'id': order_id}, {'_id': 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Delete the order
+    await db.orders.delete_one({'id': order_id})
+    
+    # Delete associated analytics entries
+    # Get the order timestamp to find related analytics
+    order_timestamp = order.get('created_at')
+    if isinstance(order_timestamp, str):
+        order_timestamp = datetime.fromisoformat(order_timestamp)
+    
+    # Delete analytics entries for this order's products
+    # We'll delete 'order' events for the products in this order created around the same time
+    product_ids = [item['product_id'] for item in order.get('items', [])]
+    
+    if product_ids and order_timestamp:
+        # Delete analytics within 5 minutes of order creation
+        time_window_start = (order_timestamp - timedelta(minutes=5)).isoformat()
+        time_window_end = (order_timestamp + timedelta(minutes=5)).isoformat()
+        
+        delete_result = await db.analytics.delete_many({
+            'product_id': {'$in': product_ids},
+            'event_type': 'order',
+            'timestamp': {'$gte': time_window_start, '$lte': time_window_end}
+        })
+        
+        return {
+            "message": "Order deleted successfully",
+            "analytics_deleted": delete_result.deleted_count
+        }
+    
+    return {"message": "Order deleted successfully", "analytics_deleted": 0}
+
 # Analytics Routes
 @api_router.post("/analytics/track")
 async def track_analytics(event: AnalyticsEvent):

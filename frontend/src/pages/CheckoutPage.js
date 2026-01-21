@@ -34,6 +34,7 @@ const CheckoutPage = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const { cart, getTotal } = useCart();
+  const [whatsappNumber, setWhatsappNumber] = useState('5521988760870');
   const [formData, setFormData] = useState({
     name: '',
     room: '',
@@ -45,6 +46,20 @@ const CheckoutPage = () => {
   });
 
   const total = getTotal();
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get(`${API}/settings`);
+      setWhatsappNumber(response.data.whatsapp_number);
+    } catch (error) {
+      console.error('Failed to fetch settings:', error);
+      // Use default if fetch fails
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -107,7 +107,13 @@ const CheckoutPage = () => {
       const message = generateWhatsAppMessage(displayOrder, language);
       const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
       
-      localStorage.setItem('teruza-last-order', JSON.stringify({ order: displayOrder, whatsappUrl }));
+      // Store order data
+      const orderDataToStore = { order: displayOrder, whatsappUrl };
+      localStorage.setItem('teruza-last-order', JSON.stringify(orderDataToStore));
+      
+      // Small delay to ensure localStorage is written
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       navigate('/confirmation');
     } catch (error) {
       console.error('Failed to create order:', error);

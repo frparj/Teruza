@@ -4,8 +4,16 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { motion } from 'framer-motion';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Minus, X } from 'lucide-react';
 import axios from 'axios';
 import { formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -22,6 +30,11 @@ const CatalogPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+  
+  // Product detail modal state
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     fetchCategories();
@@ -77,19 +90,68 @@ const CatalogPage = () => {
     return name.includes(searchQuery.toLowerCase()) || desc.includes(searchQuery.toLowerCase());
   });
 
-  const handleAddToCart = (product) => {
+  // Handle adding to cart from card button (single item)
+  const handleAddToCartFromCard = (e, product) => {
+    e.stopPropagation(); // Prevent card click from opening modal
     const productWithName = {
       ...product,
       name: getProductName(product)
     };
     addToCart(productWithName);
-    toast.success(`${getProductName(product)} ${t('addToCart').toLowerCase()}`);
+    toast.success(`${getProductName(product)} ${t('addedToCart')}`);
     
     // Track analytics
     axios.post(`${API}/analytics/track`, {
       product_id: product.id,
       event_type: 'add_to_cart'
     }).catch(err => console.error('Analytics tracking failed:', err));
+  };
+
+  // Handle opening product detail modal
+  const handleOpenProductDetail = (product) => {
+    setSelectedProduct(product);
+    setQuantity(product.type === 'service' ? 1 : 1);
+    setIsDrawerOpen(true);
+    
+    // Track view analytics
+    axios.post(`${API}/analytics/track`, {
+      product_id: product.id,
+      event_type: 'view'
+    }).catch(err => console.error('Analytics tracking failed:', err));
+  };
+
+  // Handle adding to cart from modal (with quantity)
+  const handleAddToCartFromModal = () => {
+    if (!selectedProduct) return;
+    
+    const productWithName = {
+      ...selectedProduct,
+      name: getProductName(selectedProduct)
+    };
+    
+    // Add the specified quantity
+    for (let i = 0; i < quantity; i++) {
+      addToCart(productWithName);
+    }
+    
+    // Track analytics
+    axios.post(`${API}/analytics/track`, {
+      product_id: selectedProduct.id,
+      event_type: 'add_to_cart'
+    }).catch(err => console.error('Analytics tracking failed:', err));
+    
+    // Show success message
+    const productName = getProductName(selectedProduct);
+    if (quantity === 1) {
+      toast.success(`${productName} ${t('addedToCart')}`);
+    } else {
+      toast.success(`${quantity} ${productName} ${t('itemsAddedToCart')}`);
+    }
+    
+    // Close modal
+    setIsDrawerOpen(false);
+    setSelectedProduct(null);
+    setQuantity(1);
   };
 
   const handleCategoryChange = (category) => {
@@ -99,6 +161,14 @@ const CatalogPage = () => {
     } else {
       setSearchParams({});
     }
+  };
+
+  const incrementQuantity = () => {
+    setQuantity(prev => prev + 1);
+  };
+
+  const decrementQuantity = () => {
+    setQuantity(prev => (prev > 1 ? prev - 1 : 1));
   };
 
   return (
@@ -163,7 +233,8 @@ const CatalogPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 data-testid={`product-card-${product.id}`}
-                className="bg-card rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                className="bg-card rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => handleOpenProductDetail(product)}
               >
                 {product.image_url && (
                   <div className="aspect-square overflow-hidden bg-muted">
@@ -187,7 +258,7 @@ const CatalogPage = () => {
                     </span>
                     <Button
                       data-testid={`add-to-cart-${product.id}`}
-                      onClick={() => handleAddToCart(product)}
+                      onClick={(e) => handleAddToCartFromCard(e, product)}
                       size="sm"
                       className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full h-8 w-8 p-0 active:scale-95 transition-transform"
                     >
@@ -200,6 +271,108 @@ const CatalogPage = () => {
           </div>
         )}
       </div>
+
+      {/* Product Detail Drawer (Bottom Sheet) */}
+      <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+        <DrawerContent className="max-h-[90vh]">
+          {selectedProduct && (
+            <>
+              {/* Close Button */}
+              <DrawerClose asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-4 top-4 z-10 h-8 w-8 p-0 rounded-full bg-background/80 backdrop-blur-sm"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </DrawerClose>
+
+              {/* Scrollable Content */}
+              <div className="overflow-y-auto max-h-[calc(90vh-180px)]">
+                {/* Product Image */}
+                {selectedProduct.image_url && (
+                  <div className="w-full aspect-video bg-muted overflow-hidden">
+                    <img
+                      src={selectedProduct.image_url}
+                      alt={getProductName(selectedProduct)}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+
+                {/* Product Info */}
+                <DrawerHeader className="text-left">
+                  <DrawerTitle className="text-xl font-bold">
+                    {getProductName(selectedProduct)}
+                  </DrawerTitle>
+                  <div className="text-2xl font-bold text-primary mt-2">
+                    {formatCurrency(selectedProduct.price)}
+                  </div>
+                </DrawerHeader>
+
+                {/* Full Description */}
+                <div className="px-4 pb-4">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {getProductDesc(selectedProduct)}
+                  </p>
+
+                  {/* Service Note */}
+                  {selectedProduct.type === 'service' && (
+                    <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                      <p className="text-xs text-muted-foreground">
+                        {t('serviceNote')}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer with Quantity and Add Button */}
+              <DrawerFooter className="border-t border-muted pt-4">
+                {/* Quantity Selector (hidden for services) */}
+                {selectedProduct.type !== 'service' && (
+                  <div className="flex items-center justify-center gap-4 mb-4">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      {t('quantity')}:
+                    </span>
+                    <div className="flex items-center gap-3 bg-muted rounded-full p-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={decrementQuantity}
+                        disabled={quantity <= 1}
+                        className="h-8 w-8 p-0 rounded-full hover:bg-background"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="w-8 text-center font-semibold text-lg">
+                        {quantity}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={incrementQuantity}
+                        className="h-8 w-8 p-0 rounded-full hover:bg-background"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Add to Cart Button */}
+                <Button
+                  onClick={handleAddToCartFromModal}
+                  className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg"
+                >
+                  {t('addToCartFull')} - {formatCurrency(selectedProduct.price * quantity)}
+                </Button>
+              </DrawerFooter>
+            </>
+          )}
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };

@@ -487,6 +487,193 @@ async def delete_category(
     
     return {"message": "Category deleted successfully"}
 
+# Order Routes
+@api_router.post("/orders", response_model=Order)
+async def create_order(order_data: OrderCreate):
+    order = Order(**order_data.model_dump())
+    doc = order.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    
+    await db.orders.insert_one(doc)
+    
+    # Track analytics for ordered items
+    for item in order_data.items:
+        analytics = ProductAnalytics(
+            product_id=item.product_id,
+            event_type='order'
+        )
+        analytics_doc = analytics.model_dump()
+        analytics_doc['timestamp'] = analytics_doc['timestamp'].isoformat()
+        await db.analytics.insert_one(analytics_doc)
+    
+    return order
+
+@api_router.get("/orders", response_model=List[Order])
+async def get_orders(
+    status: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    query = {}
+    if status:
+        query['status'] = status
+    
+    orders = await db.orders.find(query, {'_id': 0}).sort('created_at', -1).to_list(1000)
+    
+    for order in orders:
+        if isinstance(order.get('created_at'), str):
+            order['created_at'] = datetime.fromisoformat(order['created_at'])
+        if isinstance(order.get('updated_at'), str):
+            order['updated_at'] = datetime.fromisoformat(order['updated_at'])
+    
+    return orders
+
+@api_router.get("/orders/{order_id}", response_model=Order)
+async def get_order(
+    order_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    order = await db.orders.find_one({'id': order_id}, {'_id': 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    if isinstance(order.get('created_at'), str):
+        order['created_at'] = datetime.fromisoformat(order['created_at'])
+    if isinstance(order.get('updated_at'), str):
+        order['updated_at'] = datetime.fromisoformat(order['updated_at'])
+    
+    return order
+
+@api_router.put("/orders/{order_id}/status", response_model=Order)
+async def update_order_status(
+    order_id: str,
+    status_update: OrderStatusUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    existing = await db.orders.find_one({'id': order_id}, {'_id': 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    update_data = {
+        'status': status_update.status,
+        'updated_at': datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.orders.update_one({'id': order_id}, {'$set': update_data})
+    
+    updated_order = await db.orders.find_one({'id': order_id}, {'_id': 0})
+    if isinstance(updated_order.get('created_at'), str):
+        updated_order['created_at'] = datetime.fromisoformat(updated_order['created_at'])
+    if isinstance(updated_order.get('updated_at'), str):
+        updated_order['updated_at'] = datetime.fromisoformat(updated_order['updated_at'])
+    
+    return updated_order
+
+# Analytics Routes
+@api_router.post("/analytics/track")
+async def track_analytics(event: AnalyticsEvent):
+    analytics = ProductAnalytics(**event.model_dump())
+    doc = analytics.model_dump()
+    doc['timestamp'] = doc['timestamp'].isoformat()
+    
+    await db.analytics.insert_one(doc)
+    return {"message": "Event tracked"}
+
+@api_router.get("/analytics/products")
+async def get_product_analytics(current_user: dict = Depends(get_current_user)):
+    # Get all products
+    products = await db.products.find({}, {'_id': 0}).to_list(1000)
+    
+    analytics_data = []
+    for product in products:
+        product_id = product['id']
+        
+        # Count views
+        views = await db.analytics.count_documents({
+            'product_id': product_id,
+            'event_type': 'view'
+        })
+        
+        # Count add to cart
+        add_to_cart = await db.analytics.count_documents({
+            'product_id': product_id,
+            'event_type': 'add_to_cart'
+        })
+        
+        # Count orders
+        orders = await db.analytics.count_documents({
+            'product_id': product_id,
+            'event_type': 'order'
+        })
+        
+        # Calculate conversion rate
+        conversion_rate = (orders / views * 100) if views > 0 else 0
+        
+        # Calculate revenue
+        revenue = orders * product['price']
+        
+        analytics_data.append({
+            'product_id': product_id,
+            'name_pt': product['name_pt'],
+            'name_en': product['name_en'],
+            'name_es': product['name_es'],
+            'category': product['category'],
+            'price': product['price'],
+            'views': views,
+            'add_to_cart': add_to_cart,
+            'orders': orders,
+            'conversion_rate': round(conversion_rate, 2),
+            'revenue': revenue
+        })
+    
+    # Sort by orders (best sellers)
+    analytics_data.sort(key=lambda x: x['orders'], reverse=True)
+    
+    return analytics_data
+
+@api_router.get("/analytics/summary")
+async def get_analytics_summary(current_user: dict = Depends(get_current_user)):
+    # Total orders
+    total_orders = await db.orders.count_documents({})
+    
+    # Pending orders
+    pending_orders = await db.orders.count_documents({'status': 'pending'})
+    
+    # Completed orders
+    completed_orders = await db.orders.count_documents({'status': 'completed'})
+    
+    # Total revenue from completed orders
+    completed_orders_data = await db.orders.find({'status': 'completed'}, {'_id': 0}).to_list(1000)
+    total_revenue = sum(order.get('total', 0) for order in completed_orders_data)
+    
+    # Recent orders (last 7 days)
+    seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    seven_days_ago_iso = seven_days_ago.isoformat()
+    recent_orders = await db.orders.count_documents({
+        'created_at': {'$gte': seven_days_ago_iso}
+    })
+    
+    # Most popular categories
+    category_stats = {}
+    analytics_events = await db.analytics.find({'event_type': 'order'}, {'_id': 0}).to_list(10000)
+    
+    for event in analytics_events:
+        product = await db.products.find_one({'id': event['product_id']}, {'_id': 0})
+        if product:
+            category = product['category']
+            category_stats[category] = category_stats.get(category, 0) + 1
+    
+    popular_categories = sorted(category_stats.items(), key=lambda x: x[1], reverse=True)[:5]
+    
+    return {
+        'total_orders': total_orders,
+        'pending_orders': pending_orders,
+        'completed_orders': completed_orders,
+        'total_revenue': total_revenue,
+        'recent_orders': recent_orders,
+        'popular_categories': [{'category': cat, 'count': count} for cat, count in popular_categories]
+    }
+
 # Include router
 app.include_router(api_router)
 

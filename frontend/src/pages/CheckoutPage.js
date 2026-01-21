@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
-import { formatCurrency, DELIVERY_FEE, WHATSAPP_NUMBER, generateWhatsAppMessage } from '@/lib/utils';
+import { formatCurrency, WHATSAPP_NUMBER, generateWhatsAppMessage } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const DDI_OPTIONS = [
@@ -40,8 +40,7 @@ const CheckoutPage = () => {
     notes: '',
   });
 
-  const subtotal = getTotal();
-  const total = subtotal + DELIVERY_FEE;
+  const total = getTotal();
 
   const handleSubmit = (e) => {
     e.preventDefault();

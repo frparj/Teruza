@@ -266,6 +266,12 @@ const translations = {
     orderCopied: 'Order copied to clipboard',
     required: 'required',
     fillAllFields: 'Please fill all required fields',
+    productDetails: 'Product Details',
+    addToCartFull: 'Add to Cart',
+    addedToCart: 'added to cart',
+    itemsAddedToCart: 'items added to cart',
+    close: 'Close',
+    serviceNote: 'This is a service. Quantity is fixed.',
     ddi: {
       '+55': 'Brazil',
       '+54': 'Argentina',

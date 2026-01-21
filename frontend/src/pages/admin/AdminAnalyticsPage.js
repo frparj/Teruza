@@ -45,6 +45,23 @@ const AdminAnalyticsPage = () => {
     }
   };
 
+  const handleResetAnalytics = async () => {
+    if (!window.confirm('Are you sure you want to reset ALL analytics data? This action cannot be undone and will clear all product performance metrics (views, add to cart, orders).')) {
+      return;
+    }
+
+    try {
+      const response = await axios.delete(`${API}/analytics/reset`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success(`Analytics reset successfully. ${response.data.deleted_count} entries removed.`);
+      fetchAnalytics();
+    } catch (error) {
+      console.error('Failed to reset analytics:', error);
+      toast.error('Failed to reset analytics');
+    }
+  };
+
   const getProductName = (product) => {
     if (language === 'pt') return product.name_pt;
     if (language === 'es') return product.name_es;

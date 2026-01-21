@@ -97,9 +97,9 @@ const AdminProductFormPage = () => {
       });
 
       setFormData({ ...formData, image_url: response.data.image_url });
-      toast.success('Image uploaded');
+      toast.success(t('admin.imageUploaded'));
     } catch (error) {
-      toast.error('Failed to upload image');
+      toast.error(t('admin.failedToUploadImage'));
     } finally {
       setUploading(false);
     }

@@ -295,8 +295,102 @@ async def upload_image(
 
 @api_router.get("/categories")
 async def get_categories():
-    categories = await db.products.distinct('category')
-    return {"categories": categories}
+    categories = await db.categories.find({}, {'_id': 0}).to_list(1000)
+    
+    for category in categories:
+        if isinstance(category.get('created_at'), str):
+            category['created_at'] = datetime.fromisoformat(category['created_at'])
+        if isinstance(category.get('updated_at'), str):
+            category['updated_at'] = datetime.fromisoformat(category['updated_at'])
+    
+    return categories
+
+@api_router.post("/categories", response_model=Category)
+async def create_category(
+    category_data: CategoryCreate,
+    current_user: dict = Depends(get_current_user)
+):
+    # Check if category name already exists
+    existing = await db.categories.find_one({
+        '$or': [
+            {'name_pt': category_data.name_pt},
+            {'name_en': category_data.name_en},
+            {'name_es': category_data.name_es}
+        ]
+    }, {'_id': 0})
+    
+    if existing:
+        raise HTTPException(status_code=400, detail="Category name already exists")
+    
+    category = Category(**category_data.model_dump())
+    doc = category.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    doc['updated_at'] = doc['updated_at'].isoformat()
+    
+    await db.categories.insert_one(doc)
+    return category
+
+@api_router.get("/categories/{category_id}", response_model=Category)
+async def get_category(category_id: str):
+    category = await db.categories.find_one({'id': category_id}, {'_id': 0})
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    if isinstance(category.get('created_at'), str):
+        category['created_at'] = datetime.fromisoformat(category['created_at'])
+    if isinstance(category.get('updated_at'), str):
+        category['updated_at'] = datetime.fromisoformat(category['updated_at'])
+    
+    return category
+
+@api_router.put("/categories/{category_id}", response_model=Category)
+async def update_category(
+    category_id: str,
+    category_data: CategoryUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    existing = await db.categories.find_one({'id': category_id}, {'_id': 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    update_data = {k: v for k, v in category_data.model_dump().items() if v is not None}
+    update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+    
+    await db.categories.update_one({'id': category_id}, {'$set': update_data})
+    
+    updated_category = await db.categories.find_one({'id': category_id}, {'_id': 0})
+    if isinstance(updated_category.get('created_at'), str):
+        updated_category['created_at'] = datetime.fromisoformat(updated_category['created_at'])
+    if isinstance(updated_category.get('updated_at'), str):
+        updated_category['updated_at'] = datetime.fromisoformat(updated_category['updated_at'])
+    
+    return updated_category
+
+@api_router.delete("/categories/{category_id}")
+async def delete_category(
+    category_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    # Check if any products use this category
+    category = await db.categories.find_one({'id': category_id}, {'_id': 0})
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    # Get the category name to check products
+    category_name_pt = category.get('name_pt')
+    products_using_category = await db.products.count_documents({'category': category_name_pt})
+    
+    if products_using_category > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete category. {products_using_category} product(s) are using this category."
+        )
+    
+    result = await db.categories.delete_one({'id': category_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    return {"message": "Category deleted successfully"}
 
 # Include router
 app.include_router(api_router)

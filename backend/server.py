@@ -714,6 +714,7 @@ logger = logging.getLogger(__name__)
 async def startup_event():
     await init_admin_user()
     await init_default_categories()
+    await init_default_settings()
     logger.info("Application started")
 
 @app.on_event("shutdown")

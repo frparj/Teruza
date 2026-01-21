@@ -108,14 +108,6 @@ const CartPage = () => {
       {/* Sticky Bottom Summary */}
       <div className="fixed bottom-16 left-0 right-0 bg-card border-t border-muted p-4 shadow-lg">
         <div className="max-w-md mx-auto space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t('subtotal')}</span>
-            <span className="font-semibold">{formatCurrency(subtotal)}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">{t('deliveryFee')}</span>
-            <span className="font-semibold">{formatCurrency(DELIVERY_FEE)}</span>
-          </div>
           <div className="flex justify-between text-lg font-bold border-t border-muted pt-2">
             <span>{t('total')}</span>
             <span className="text-primary">{formatCurrency(total)}</span>

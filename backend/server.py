@@ -275,6 +275,16 @@ async def init_default_categories():
             await db.categories.insert_one(doc)
             logging.info(f"Default category created: {cat_data['name_pt']}")
 
+# Initialize default settings
+async def init_default_settings():
+    existing = await db.settings.find_one({}, {'_id': 0})
+    if not existing:
+        settings = Settings(whatsapp_number='5521988760870')
+        doc = settings.model_dump()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        await db.settings.insert_one(doc)
+        logging.info("Default settings created")
+
 
 # Auth Routes
 @api_router.post("/auth/login", response_model=TokenResponse)

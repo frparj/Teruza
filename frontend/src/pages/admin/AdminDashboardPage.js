@@ -129,6 +129,14 @@ const AdminDashboardPage = () => {
               Categories
             </Button>
             <Button
+              data-testid="admin-settings-button"
+              onClick={() => navigate('/admin/settings')}
+              variant="outline"
+              className="h-10"
+            >
+              Settings
+            </Button>
+            <Button
               data-testid="admin-logout-button"
               onClick={logout}
               variant="ghost"

@@ -61,29 +61,28 @@ const HomePage = () => {
         </h2>
         <div className="grid grid-cols-2 gap-4">
           {categories.map((category, index) => {
-            const translatedCategory = t(`category.${category}`);
+            const translatedCategory = getCategoryName(category);
             return (
               <motion.div
-                key={category}
+                key={category.id}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05 }}
-                data-testid={`category-${category.toLowerCase().replace(/\s+/g, '-')}`}
-                onClick={() => navigate(`/catalog?category=${encodeURIComponent(category)}`)}
+                data-testid={`category-${category.name_pt.toLowerCase().replace(/\s+/g, '-')}`}
+                onClick={() => navigate(`/catalog?category=${encodeURIComponent(category.name_pt)}`)}
                 className="bg-card rounded-xl shadow-md overflow-hidden cursor-pointer active:scale-95 transition-transform hover:shadow-lg"
               >
                 <div className="aspect-video overflow-hidden">
                   <img
-                    src={CATEGORY_IMAGES[category]}
-                    alt={category}
+                    src={category.image_url}
+                    alt={translatedCategory}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="p-3 min-h-[60px] flex items-center justify-center">
-                  <h3
-                    className="font-nunito font-bold text-sm text-center leading-tight"
-                    dangerouslySetInnerHTML={{ __html: translatedCategory }}
-                  />
+                  <h3 className="font-nunito font-bold text-sm text-center leading-tight">
+                    {translatedCategory}
+                  </h3>
                 </div>
               </motion.div>
             );

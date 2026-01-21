@@ -129,6 +129,49 @@ class CategoryUpdate(BaseModel):
     name_es: Optional[str] = None
     image_url: Optional[str] = None
 
+class OrderItem(BaseModel):
+    product_id: str
+    name: str
+    price: float
+    quantity: int
+
+class Order(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    guest_name: str
+    room_number: str
+    phone: str
+    delivery_preference: str
+    notes: Optional[str] = None
+    items: List[OrderItem]
+    total: float
+    status: str = "pending"  # pending, confirmed, completed, cancelled
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class OrderCreate(BaseModel):
+    guest_name: str
+    room_number: str
+    phone: str
+    delivery_preference: str
+    notes: Optional[str] = None
+    items: List[OrderItem]
+    total: float
+
+class OrderStatusUpdate(BaseModel):
+    status: str
+
+class ProductAnalytics(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    product_id: str
+    event_type: str  # view, add_to_cart, order
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class AnalyticsEvent(BaseModel):
+    product_id: str
+    event_type: str
+
 # Helper functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')

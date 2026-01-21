@@ -1,23 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
-import { CATEGORY_IMAGES } from '@/lib/utils';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const HomePage = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
 
-  const categories = [
-    'Bebidas',
-    'Snacks',
-    'Refeições Rápidas',
-    'Higiene',
-    'Emergências',
-    'Serviços'
-  ];
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API}/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
+
+  const getCategoryName = (category) => {
+    if (language === 'pt') return category.name_pt;
+    if (language === 'es') return category.name_es;
+    return category.name_en;
+  };
 
   return (
     <div className="pb-20 min-h-screen">

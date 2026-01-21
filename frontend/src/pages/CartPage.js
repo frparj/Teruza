@@ -5,15 +5,14 @@ import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
-import { formatCurrency, DELIVERY_FEE } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 
 const CartPage = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { cart, updateQuantity, removeFromCart, getTotal } = useCart();
 
-  const subtotal = getTotal();
-  const total = subtotal + DELIVERY_FEE;
+  const total = getTotal();
 
   if (cart.length === 0) {
     return (

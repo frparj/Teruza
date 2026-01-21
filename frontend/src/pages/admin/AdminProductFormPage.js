@@ -11,14 +11,13 @@ import { Switch } from '@/components/ui/switch';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Upload } from 'lucide-react';
 import axios from 'axios';
-import { CATEGORIES } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const AdminProductFormPage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { token } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -26,6 +25,7 @@ const AdminProductFormPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [formData, setFormData] = useState({
     name_pt: '',
     name_en: '',
@@ -34,7 +34,7 @@ const AdminProductFormPage = () => {
     desc_en: '',
     desc_es: '',
     type: 'product',
-    category: CATEGORIES[0],
+    category: '',
     price: '',
     currency: 'BRL',
     image_url: '',
@@ -43,10 +43,30 @@ const AdminProductFormPage = () => {
   });
 
   useEffect(() => {
+    fetchCategories();
     if (isEdit) {
       fetchProduct();
     }
   }, [id]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API}/categories`);
+      setCategories(response.data);
+      if (response.data.length > 0 && !formData.category) {
+        setFormData(prev => ({ ...prev, category: response.data[0].name_pt }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+      toast.error('Failed to load categories');
+    }
+  };
+
+  const getCategoryName = (category) => {
+    if (language === 'pt') return category.name_pt;
+    if (language === 'es') return category.name_es;
+    return category.name_en;
+  };
 
   const fetchProduct = async () => {
     try {

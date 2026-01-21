@@ -693,6 +693,49 @@ async def get_analytics_summary(current_user: dict = Depends(get_current_user)):
         'popular_categories': [{'category': cat, 'count': count} for cat, count in popular_categories]
     }
 
+# Settings Routes
+@api_router.get("/settings")
+async def get_settings():
+    settings = await db.settings.find_one({}, {'_id': 0})
+    if not settings:
+        # Create default if not exists
+        settings = Settings(whatsapp_number='5521988760870')
+        doc = settings.model_dump()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        await db.settings.insert_one(doc)
+    
+    if isinstance(settings.get('updated_at'), str):
+        settings['updated_at'] = datetime.fromisoformat(settings['updated_at'])
+    
+    return settings
+
+@api_router.put("/settings", response_model=Settings)
+async def update_settings(
+    settings_data: SettingsUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    existing = await db.settings.find_one({}, {'_id': 0})
+    
+    update_data = {
+        'whatsapp_number': settings_data.whatsapp_number,
+        'updated_at': datetime.now(timezone.utc).isoformat()
+    }
+    
+    if existing:
+        await db.settings.update_one({'id': existing['id']}, {'$set': update_data})
+        updated_settings = await db.settings.find_one({'id': existing['id']}, {'_id': 0})
+    else:
+        settings = Settings(**settings_data.model_dump())
+        doc = settings.model_dump()
+        doc['updated_at'] = doc['updated_at'].isoformat()
+        await db.settings.insert_one(doc)
+        updated_settings = doc
+    
+    if isinstance(updated_settings.get('updated_at'), str):
+        updated_settings['updated_at'] = datetime.fromisoformat(updated_settings['updated_at'])
+    
+    return updated_settings
+
 # Include router
 app.include_router(api_router)
 

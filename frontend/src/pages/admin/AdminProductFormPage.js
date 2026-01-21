@@ -350,7 +350,7 @@ const AdminProductFormPage = () => {
               disabled={loading}
               className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground h-12 rounded-lg font-semibold"
             >
-              {loading ? 'Saving...' : t('admin.save')}
+              {loading ? t('admin.saving') : t('admin.save')}
             </Button>
           </div>
         </form>

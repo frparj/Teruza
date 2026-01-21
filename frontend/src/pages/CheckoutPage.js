@@ -224,15 +224,7 @@ const CheckoutPage = () => {
 
           {/* Order Summary */}
           <div className="bg-card rounded-xl p-4 space-y-2 border border-muted">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('subtotal')}</span>
-              <span className="font-semibold">{formatCurrency(subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">{t('deliveryFee')}</span>
-              <span className="font-semibold">{formatCurrency(DELIVERY_FEE)}</span>
-            </div>
-            <div className="flex justify-between text-lg font-bold border-t border-muted pt-2">
+            <div className="flex justify-between text-lg font-bold">
               <span>{t('total')}</span>
               <span className="text-primary">{formatCurrency(total)}</span>
             </div>

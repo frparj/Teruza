@@ -24,7 +24,7 @@ const AdminLoginPage = () => {
 
     try {
       await login(formData.email, formData.password);
-      toast.success('Login successful');
+      toast.success(t('admin.loginSuccess'));
       navigate('/admin/dashboard');
     } catch (error) {
       toast.error(t('admin.error'));

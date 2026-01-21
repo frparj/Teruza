@@ -20,6 +20,7 @@ import InformationPage from '@/pages/InformationPage';
 import AdminLoginPage from '@/pages/admin/AdminLoginPage';
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
 import AdminProductFormPage from '@/pages/admin/AdminProductFormPage';
+import AdminCategoriesPage from '@/pages/admin/AdminCategoriesPage';
 
 const GuestLayout = ({ children }) => {
   return (

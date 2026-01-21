@@ -175,21 +175,21 @@ const AdminDashboardPage = () => {
 
         {/* Products Table */}
         {loading ? (
-          <div className="text-center py-12">Loading...</div>
+          <div className="text-center py-12">{t('admin.loading')}</div>
         ) : (
           <div className="bg-card rounded-xl shadow-md overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="text-left p-4 font-semibold text-sm">Image</th>
-                    <th className="text-left p-4 font-semibold text-sm">Name</th>
-                    <th className="text-left p-4 font-semibold text-sm">Category</th>
-                    <th className="text-left p-4 font-semibold text-sm">Type</th>
-                    <th className="text-left p-4 font-semibold text-sm">Price</th>
-                    <th className="text-left p-4 font-semibold text-sm">Active</th>
-                    <th className="text-left p-4 font-semibold text-sm">Featured</th>
-                    <th className="text-left p-4 font-semibold text-sm">Actions</th>
+                    <th className="text-left p-4 font-semibold text-sm">{t('admin.image')}</th>
+                    <th className="text-left p-4 font-semibold text-sm">{t('admin.name')}</th>
+                    <th className="text-left p-4 font-semibold text-sm">{t('admin.category')}</th>
+                    <th className="text-left p-4 font-semibold text-sm">{t('admin.type')}</th>
+                    <th className="text-left p-4 font-semibold text-sm">{t('admin.price')}</th>
+                    <th className="text-left p-4 font-semibold text-sm">{t('admin.active')}</th>
+                    <th className="text-left p-4 font-semibold text-sm">{t('admin.featured')}</th>
+                    <th className="text-left p-4 font-semibold text-sm">{t('admin.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>

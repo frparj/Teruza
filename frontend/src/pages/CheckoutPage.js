@@ -60,8 +60,6 @@ const CheckoutPage = () => {
       deliveryPreference: formData.deliveryPreference === 'door' ? t('atTheDoor') : t('handToMe'),
       notes: formData.notes,
       items: cart,
-      subtotal,
-      deliveryFee: DELIVERY_FEE,
       total,
     };
 
@@ -83,8 +81,6 @@ const CheckoutPage = () => {
       deliveryPreference: formData.deliveryPreference === 'door' ? t('atTheDoor') : t('handToMe'),
       notes: formData.notes,
       items: cart,
-      subtotal,
-      deliveryFee: DELIVERY_FEE,
       total,
     };
 

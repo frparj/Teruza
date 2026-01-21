@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { Search, Plus } from 'lucide-react';
 import axios from 'axios';
-import { formatCurrency, CATEGORIES } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -18,13 +18,30 @@ const CatalogPage = () => {
   const { addToCart } = useCart();
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
 
   useEffect(() => {
+    fetchCategories();
     fetchProducts();
   }, [selectedCategory]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${API}/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
+
+  const getCategoryName = (category) => {
+    if (language === 'pt') return category.name_pt;
+    if (language === 'es') return category.name_es;
+    return category.name_en;
+  };
 
   const fetchProducts = async () => {
     try {

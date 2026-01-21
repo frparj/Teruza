@@ -105,12 +105,28 @@ const AdminDashboardPage = () => {
           <h1 className="text-2xl font-nunito font-bold">{t('admin.dashboard')}</h1>
           <div className="flex items-center gap-2">
             <Button
+              data-testid="admin-orders-button"
+              onClick={() => navigate('/admin/orders')}
+              variant="outline"
+              className="h-10"
+            >
+              Orders
+            </Button>
+            <Button
+              data-testid="admin-analytics-button"
+              onClick={() => navigate('/admin/analytics')}
+              variant="outline"
+              className="h-10"
+            >
+              Analytics
+            </Button>
+            <Button
               data-testid="admin-categories-button"
               onClick={() => navigate('/admin/categories')}
               variant="outline"
               className="h-10"
             >
-              Manage Categories
+              Categories
             </Button>
             <Button
               data-testid="admin-logout-button"

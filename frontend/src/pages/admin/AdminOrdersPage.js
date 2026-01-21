@@ -230,7 +230,7 @@ const AdminOrdersPage = () => {
                   <div className="text-lg font-bold">
                     Total: <span className="text-primary">{formatCurrency(order.total)}</span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     {order.status === 'pending' && (
                       <Button
                         data-testid={`confirm-order-${order.id}`}
@@ -261,6 +261,15 @@ const AdminOrdersPage = () => {
                         Cancel
                       </Button>
                     )}
+                    <Button
+                      data-testid={`delete-order-${order.id}`}
+                      onClick={() => deleteOrder(order.id)}
+                      size="sm"
+                      variant="outline"
+                      className="border-red-500 text-red-500 hover:bg-red-50"
+                    >
+                      Delete
+                    </Button>
                   </div>
                 </div>
               </motion.div>

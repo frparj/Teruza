@@ -42,7 +42,7 @@ const CheckoutPage = () => {
 
   const total = getTotal();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.name || !formData.room || !formData.phone) {
@@ -53,21 +53,47 @@ const CheckoutPage = () => {
     const ddiCode = formData.ddi === 'OTHER' ? formData.customDdi : formData.ddi;
     const fullPhone = `${ddiCode}${formData.phone}`;
     
+    const orderItems = cart.map(item => ({
+      product_id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity
+    }));
+    
     const order = {
-      name: formData.name,
-      room: formData.room,
+      guest_name: formData.name,
+      room_number: formData.room,
       phone: fullPhone,
-      deliveryPreference: formData.deliveryPreference === 'door' ? t('atTheDoor') : t('handToMe'),
+      delivery_preference: formData.deliveryPreference === 'door' ? t('atTheDoor') : t('handToMe'),
       notes: formData.notes,
-      items: cart,
+      items: orderItems,
       total,
     };
 
-    const message = generateWhatsAppMessage(order, language);
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
-    
-    localStorage.setItem('teruza-last-order', JSON.stringify({ order, whatsappUrl }));
-    navigate('/confirmation');
+    try {
+      // Create order in backend
+      await axios.post(`${API}/orders`, order);
+      
+      // Generate WhatsApp message
+      const displayOrder = {
+        name: formData.name,
+        room: formData.room,
+        phone: fullPhone,
+        deliveryPreference: order.delivery_preference,
+        notes: formData.notes,
+        items: cart,
+        total,
+      };
+      
+      const message = generateWhatsAppMessage(displayOrder, language);
+      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+      
+      localStorage.setItem('teruza-last-order', JSON.stringify({ order: displayOrder, whatsappUrl }));
+      navigate('/confirmation');
+    } catch (error) {
+      console.error('Failed to create order:', error);
+      toast.error('Failed to create order. Please try again.');
+    }
   };
 
   const handleCopyOrder = () => {

@@ -21,6 +21,8 @@ import AdminLoginPage from '@/pages/admin/AdminLoginPage';
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage';
 import AdminProductFormPage from '@/pages/admin/AdminProductFormPage';
 import AdminCategoriesPage from '@/pages/admin/AdminCategoriesPage';
+import AdminAnalyticsPage from '@/pages/admin/AdminAnalyticsPage';
+import AdminOrdersPage from '@/pages/admin/AdminOrdersPage';
 
 const GuestLayout = ({ children }) => {
   return (

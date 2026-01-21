@@ -107,6 +107,28 @@ class ProductUpdate(BaseModel):
 class ImageUploadResponse(BaseModel):
     image_url: str
 
+class Category(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name_pt: str
+    name_en: str
+    name_es: str
+    image_url: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CategoryCreate(BaseModel):
+    name_pt: str
+    name_en: str
+    name_es: str
+    image_url: Optional[str] = None
+
+class CategoryUpdate(BaseModel):
+    name_pt: Optional[str] = None
+    name_en: Optional[str] = None
+    name_es: Optional[str] = None
+    image_url: Optional[str] = None
+
 # Helper functions
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')

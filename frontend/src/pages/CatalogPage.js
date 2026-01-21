@@ -123,17 +123,17 @@ const CatalogPage = () => {
           >
             {t('allCategories')}
           </Button>
-          {CATEGORIES.map((category) => {
-            const translatedCategory = t(`category.${category}`).replace('<br>', ' ');
+          {categories.map((category) => {
+            const translatedCategory = getCategoryName(category);
             return (
               <Button
-                key={category}
-                data-testid={`category-filter-${category.toLowerCase().replace(/\s+/g, '-')}`}
-                variant={selectedCategory === category ? 'default' : 'outline'}
-                onClick={() => handleCategoryChange(category)}
+                key={category.id}
+                data-testid={`category-filter-${category.name_pt.toLowerCase().replace(/\s+/g, '-')}`}
+                variant={selectedCategory === category.name_pt ? 'default' : 'outline'}
+                onClick={() => handleCategoryChange(category.name_pt)}
                 className="rounded-full whitespace-nowrap h-10 px-4 min-h-[40px] flex items-center"
               >
-                <span dangerouslySetInnerHTML={{ __html: translatedCategory }} />
+                <span>{translatedCategory}</span>
               </Button>
             );
           })}

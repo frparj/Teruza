@@ -162,11 +162,21 @@ const AdminAnalyticsPage = () => {
 
         {/* Product Performance Table */}
         <div className="bg-card rounded-xl shadow-md overflow-hidden mb-6">
-          <div className="p-6 border-b border-muted">
-            <h2 className="text-xl font-nunito font-bold">Product Performance</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Track views, cart additions, orders, and revenue for each product
-            </p>
+          <div className="p-6 border-b border-muted flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-nunito font-bold">Product Performance</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Track views, cart additions, orders, and revenue for each product
+              </p>
+            </div>
+            <Button
+              data-testid="reset-analytics-button"
+              onClick={handleResetAnalytics}
+              variant="destructive"
+              className="h-10"
+            >
+              Reset Analytics
+            </Button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">

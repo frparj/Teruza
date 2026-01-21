@@ -27,12 +27,10 @@ export const CATEGORIES = [
   'Serviços'
 ];
 
-export const DELIVERY_FEE = 5.0;
-
 export const WHATSAPP_NUMBER = '5521988760870';
 
 export const generateWhatsAppMessage = (order, language) => {
-  const { name, room, phone, deliveryPreference, notes, items, subtotal, deliveryFee, total } = order;
+  const { name, room, phone, deliveryPreference, notes, items, total } = order;
   
   let message = `*Teruza Hostel Mini Mercado - Novo Pedido*\n\n`;
   message += `📅 Data: ${new Date().toLocaleString(language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US')}\n`;
@@ -47,9 +45,7 @@ export const generateWhatsAppMessage = (order, language) => {
   items.forEach(item => {
     message += `• ${item.quantity}x ${item.name} - R$ ${(item.price * item.quantity).toFixed(2)}\n`;
   });
-  message += `\n💰 Subtotal: R$ ${subtotal.toFixed(2)}\n`;
-  message += `🚚 Taxa de entrega: R$ ${deliveryFee.toFixed(2)}\n`;
-  message += `*Total: R$ ${total.toFixed(2)}*`;
+  message += `\n*Total: R$ ${total.toFixed(2)}*`;
   
   return encodeURIComponent(message);
 };

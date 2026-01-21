@@ -1,0 +1,154 @@
+{
+  "identity": {
+    "persona": "E1",
+    "philosophy": "Fusion over Imitation. Warmth over sterility. Functionality with a soul.",
+    "tone": "Welcoming, Efficient, Local, Trustworthy"
+  },
+  "theme": {
+    "mode": "light",
+    "style": "Warm Earthy / Mobile Delivery App",
+    "inspiration": "iFood internal app, Boutique Hostel aesthetics"
+  },
+  "colors": {
+    "primary": {
+      "DEFAULT": "#E05D44",
+      "foreground": "#FFFFFF",
+      "description": "Warm Terracotta/Orange. Use for primary CTAs, price tags, and active states."
+    },
+    "background": {
+      "DEFAULT": "#FDFBF7",
+      "description": "Cream/Bone White. Main app background to avoid clinical white sterility."
+    },
+    "card": {
+      "DEFAULT": "#FFFFFF",
+      "foreground": "#2D2A26",
+      "description": "Pure White. Use for product cards to create lift against the cream background."
+    },
+    "foreground": {
+      "DEFAULT": "#2D2A26",
+      "description": "Dark Warm Grey. Softer than pure black for text."
+    },
+    "secondary": {
+      "DEFAULT": "#8DA399",
+      "foreground": "#FFFFFF",
+      "description": "Sage Green. Use for 'Success', 'Fresh', or secondary accents."
+    },
+    "muted": {
+      "DEFAULT": "#F2EFE9",
+      "foreground": "#787570",
+      "description": "Warm Grey. For borders, dividers, and secondary text."
+    },
+    "destructive": {
+      "DEFAULT": "#D93025",
+      "foreground": "#FFFFFF"
+    }
+  },
+  "typography": {
+    "headings": {
+      "family": "Nunito, sans-serif",
+      "weights": ["700", "800"],
+      "description": "Rounded, friendly, welcoming. Use for Page Titles and Category Names."
+    },
+    "body": {
+      "family": "Inter, sans-serif",
+      "weights": ["400", "500", "600"],
+      "description": "Clean, legible, standard. Use for product descriptions, prices, and UI elements."
+    }
+  },
+  "layout": {
+    "guest_storefront": {
+      "type": "mobile-first",
+      "navigation": "Bottom Tab Bar (Home, Search, Cart, Info)",
+      "grid_strategy": "2-column grid for categories. CRITICAL: Category names must be allowed 2 lines of height.",
+      "spacing": "Generous padding (p-4, p-6) to accommodate touch targets."
+    },
+    "admin_dashboard": {
+      "type": "desktop-responsive",
+      "navigation": "Sidebar (Collapsible on mobile)",
+      "density": "High density for data tables, but comfortable spacing for edit forms."
+    }
+  },
+  "components": {
+    "buttons": {
+      "style": "Pill-shaped or Rounded-lg",
+      "sizing": "h-12 or h-14 for mobile touch targets",
+      "animation": "Scale down slightly on press (active:scale-95)"
+    },
+    "cards": {
+      "style": "Rounded-xl, Soft Shadow (shadow-sm or shadow-md)",
+      "border": "No border or very subtle border-muted",
+      "interaction": "Lift on hover (translate-y-1) for desktop, ripple for mobile"
+    },
+    "inputs": {
+      "style": "Rounded-lg, bg-white, border-muted",
+      "focus": "Ring-2 ring-primary/20 border-primary"
+    },
+    "whatsapp_checkout": {
+      "style": "Prominent Green (#25D366) or Primary Color button with WhatsApp Icon",
+      "placement": "Sticky bottom on Cart page"
+    }
+  },
+  "visual_enhancers": {
+    "shadows": "Warm, diffused shadows (e.g., shadow-[0_4px_14px_0_rgba(0,0,0,0.05)])",
+    "radius": "rounded-xl for cards, rounded-full for buttons",
+    "icons": "Lucide React (Rounded style)",
+    "micro_interactions": "Framer Motion for page transitions and cart additions"
+  },
+  "media": {
+    "category_images": [
+      {
+        "category": "Bebidas",
+        "url": "https://images.unsplash.com/photo-1632852521784-d85d5b62dd62",
+        "alt": "Refreshing soda bottles"
+      },
+      {
+        "category": "Snacks",
+        "url": "https://images.unsplash.com/photo-1641693148759-843d17ceac24",
+        "alt": "Potato chips bag"
+      },
+      {
+        "category": "Refeições Rápidas",
+        "url": "https://images.unsplash.com/photo-1762631884747-8dabb217e11b",
+        "alt": "Delicious sandwich"
+      },
+      {
+        "category": "Higiene",
+        "url": "https://images.unsplash.com/photo-1750271336429-8b0a507785c0",
+        "alt": "Toiletries basket"
+      },
+      {
+        "category": "Emergências",
+        "url": "https://images.unsplash.com/photo-1564144573017-8dc932e0039e",
+        "alt": "First aid kit"
+      },
+      {
+        "category": "Serviços",
+        "url": "https://images.unsplash.com/photo-1724847885015-be191f1a47ef",
+        "alt": "Clean towels"
+      }
+    ]
+  },
+  "accessibility": {
+    "contrast": "Ensure text is #2D2A26 on #FDFBF7 or #FFFFFF. White text on #E05D44 is accessible.",
+    "touch_targets": "Minimum 44x44px for all interactive elements on mobile.",
+    "text_scaling": "Allow font scaling without breaking layout (use rem/em)."
+  },
+  "instructions_to_main_agent": [
+    "Implement the 'Nunito' font for headings by importing it from Google Fonts in index.css.",
+    "Configure tailwind.config.js with the custom color palette (Terracotta, Cream, etc.).",
+    "Create a 'Layout' component that handles the mobile-first container (max-w-md mx-auto for desktop view of guest app) vs full-width admin.",
+    "Ensure the Category Grid allows text to wrap to 2 lines. Do not use 'truncate'. Use 'line-clamp-2' if absolutely necessary, but prefer full display.",
+    "Use 'sonner' for all toast notifications (Added to cart, Order sent).",
+    "For the WhatsApp integration, format the message clearly: 'New Order - Room [X] - [Item List] - Total: [Value]'.",
+    "Admin Dashboard should be clean and functional. Use a data table component for the product list.",
+    "Use the provided Unsplash URLs for the initial category seeding."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Do not use generic centered layouts.",
+    "Create depth through layered design elements.",
+    "Use glass-morphism effects sparingly, prefer solid warm cards for this specific design.",
+    "Every interaction needs micro-animations.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "All interactive elements MUST include data-testid attribute."
+  ]
+}

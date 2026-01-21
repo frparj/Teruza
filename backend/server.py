@@ -608,17 +608,18 @@ async def delete_order(
         order_timestamp = datetime.fromisoformat(order_timestamp)
     
     # Delete analytics entries for this order's products
-    # We'll delete 'order' events for the products in this order created around the same time
+    # We'll delete both 'order' and 'add_to_cart' events for the products in this order
     product_ids = [item['product_id'] for item in order.get('items', [])]
     
     if product_ids and order_timestamp:
-        # Delete analytics within 5 minutes of order creation
-        time_window_start = (order_timestamp - timedelta(minutes=5)).isoformat()
+        # Delete analytics within 10 minutes of order creation (to catch add_to_cart events too)
+        time_window_start = (order_timestamp - timedelta(minutes=10)).isoformat()
         time_window_end = (order_timestamp + timedelta(minutes=5)).isoformat()
         
+        # Delete both order and add_to_cart events
         delete_result = await db.analytics.delete_many({
             'product_id': {'$in': product_ids},
-            'event_type': 'order',
+            'event_type': {'$in': ['order', 'add_to_cart']},
             'timestamp': {'$gte': time_window_start, '$lte': time_window_end}
         })
         

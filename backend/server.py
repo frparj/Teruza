@@ -172,6 +172,58 @@ async def init_admin_user():
         await db.users.insert_one(doc)
         logging.info(f"Default admin user created: {admin_email}")
 
+# Initialize default categories
+async def init_default_categories():
+    default_categories = [
+        {
+            'name_pt': 'Bebidas',
+            'name_en': 'Drinks',
+            'name_es': 'Bebidas',
+            'image_url': 'https://images.unsplash.com/photo-1632852521784-d85d5b62dd62'
+        },
+        {
+            'name_pt': 'Snacks',
+            'name_en': 'Snacks',
+            'name_es': 'Snacks',
+            'image_url': 'https://images.unsplash.com/photo-1641693148759-843d17ceac24'
+        },
+        {
+            'name_pt': 'Refeições Rápidas',
+            'name_en': 'Quick Meals',
+            'name_es': 'Comidas Rápidas',
+            'image_url': 'https://images.unsplash.com/photo-1762631884747-8dabb217e11b'
+        },
+        {
+            'name_pt': 'Higiene',
+            'name_en': 'Hygiene',
+            'name_es': 'Higiene',
+            'image_url': 'https://images.unsplash.com/photo-1750271336429-8b0a507785c0'
+        },
+        {
+            'name_pt': 'Emergências',
+            'name_en': 'Essentials',
+            'name_es': 'Esenciales',
+            'image_url': 'https://images.unsplash.com/photo-1564144573017-8dc932e0039e'
+        },
+        {
+            'name_pt': 'Serviços',
+            'name_en': 'Services',
+            'name_es': 'Servicios',
+            'image_url': 'https://images.unsplash.com/photo-1724847885015-be191f1a47ef'
+        }
+    ]
+    
+    for cat_data in default_categories:
+        existing = await db.categories.find_one({'name_pt': cat_data['name_pt']}, {'_id': 0})
+        if not existing:
+            category = Category(**cat_data)
+            doc = category.model_dump()
+            doc['created_at'] = doc['created_at'].isoformat()
+            doc['updated_at'] = doc['updated_at'].isoformat()
+            await db.categories.insert_one(doc)
+            logging.info(f"Default category created: {cat_data['name_pt']}")
+
+
 # Auth Routes
 @api_router.post("/auth/login", response_model=TokenResponse)
 async def login(credentials: UserLogin):

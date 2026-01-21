@@ -222,9 +222,9 @@ const AdminProductFormPage = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {CATEGORIES.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.name_pt}>
+                    {getCategoryName(cat)}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -1,31 +1,38 @@
-# ---------- build ----------
+# ---------- BUILD ----------
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Copia manifests primeiro pra cache
+# Copia manifests primeiro (melhora cache)
 COPY package.json ./
-# Se tiver package-lock.json, melhor pra builds reproduzíveis
+COPY yarn.lock* ./
 COPY package-lock.json* ./
 
-RUN npm ci || npm install
+# Instala dependências (preferindo yarn se existir)
+RUN corepack enable \
+  && if [ -f yarn.lock ]; then \
+       yarn install --frozen-lockfile; \
+     else \
+       npm install --legacy-peer-deps; \
+     fi
 
-# Agora copia o resto
+# Copia o resto do projeto
 COPY . .
 
-# Build-time env (CRA precisa disso no build)
+# Variável usada pelo CRA (fica “embutida” no build)
 ARG REACT_APP_BACKEND_URL
 ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
 
-# Gera build/ (CRA)
-RUN npm run build
+# Build (CRA + craco -> gera /app/build)
+RUN if [ -f yarn.lock ]; then yarn build; else npm run build; fi
 
-# ---------- run (nginx) ----------
+
+# ---------- RUN ----------
 FROM nginx:alpine
 
-# Config de SPA + cache
+# Config do nginx para SPA
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# CRA build output
+# Copia build do React
 COPY --from=build /app/build /usr/share/nginx/html
 
 EXPOSE 80

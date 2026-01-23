@@ -5,7 +5,6 @@ WORKDIR /app
 # Copia manifests primeiro (melhor cache)
 COPY package.json ./
 COPY package-lock.json* ./
-COPY yarn.lock* ./
 
 # Instala dependências
 RUN corepack enable \

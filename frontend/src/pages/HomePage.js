@@ -70,7 +70,10 @@ const HomePage = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05 }}
-                data-testid={`category-${category.name_pt.toLowerCase().replace(/\s+/g, '-')}`}
+                data-testid={`category-${(category.name_pt || translatedCategory || 'cat')
+                .toLowerCase()
+                .replace(/\s+/g, '-')}`}
+
                 onClick={() => navigate(`/catalog?category=${encodeURIComponent(category.name_pt)}`)}
                 className="bg-card rounded-xl shadow-md overflow-hidden cursor-pointer active:scale-95 transition-transform hover:shadow-lg"
               >

@@ -19,13 +19,15 @@ const HomePage = () => {
   }, []);
 
   const fetchCategories = async () => {
-    try {
-      const response = await axios.get(`${API}/categories`);
-      setCategories(response.data);
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
-    }
-  };
+  try {
+    const response = await axios.get(`${API}/categories`);
+    const data = response.data;
+    setCategories(Array.isArray(data) ? data : (data.categories ?? []));
+  } catch (error) {
+    console.error('Failed to fetch categories:', error);
+    setCategories([]);
+  }
+};
 
   const getCategoryName = (category) => {
     if (language === 'pt') return category.name_pt;

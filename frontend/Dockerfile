@@ -1,6 +1,6 @@
 # ========= BUILD =========
 FROM node:20-alpine AS build
-WORKDIR /app
+WORKDIR /frontend
 
 # Copia manifests primeiro (melhor cache)
 COPY package.json ./
